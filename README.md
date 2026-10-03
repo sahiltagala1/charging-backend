@@ -14,7 +14,7 @@ This is a personal project by Mohammed Sahil Tagala. It is written from scratch 
 | 2. Complete | Pricing, late and duplicate messages, live dashboard, public deployment | Planned     |
 | 3. Roaming  | Two networks exchanging sessions over an OCPI-style API                 | Stretch     |
 
-What exists today: the project skeleton (health check, configuration checking, tests, CI) and the rules of a charging session.
+What exists today: the project skeleton (health check, configuration checking, tests, CI) the rules of a charging session, and meter readings that may arrive late, twice or out of order.
 
 ## Run it
 
@@ -46,6 +46,7 @@ The same checks run on GitHub for every push and pull request.
 | `src/server.ts`         | Starts the app and handles shutdown.                                                              |
 | `src/config.ts`         | Reads and checks environment variables.                                                           |
 | `src/domain/session.ts` | The rules of a charging session: which events are allowed in which state. No database or network. |
+| `src/domain/meter.ts`   | Meter readings during a session, kept in time order whatever order they arrive in.                |
 | `test/`                 | Tests.                                                                                            |
 | `docs/decisions/`       | One short note per significant decision, with the reasons and the alternatives.                   |
 

@@ -14,7 +14,7 @@ This is a personal project by Mohammed Sahil Tagala. It is written from scratch 
 | 2. Complete | Pricing, late and duplicate messages, live dashboard, public deployment | Planned |
 | 3. Roaming | Two networks exchanging sessions over an OCPI-style API | Stretch |
 
-What exists today: the project skeleton with a health check, configuration checking, tests and CI.
+What exists today: the project skeleton (health check, configuration checking, tests, CI) and the rules of a charging session.
 
 ## Run it
 
@@ -44,6 +44,7 @@ The same checks run on GitHub for every push and pull request.
 | `src/app.ts` | Builds the HTTP app. Tests use this directly. |
 | `src/server.ts` | Starts the app and handles shutdown. |
 | `src/config.ts` | Reads and checks environment variables. |
+| `src/domain/session.ts` | The rules of a charging session: which events are allowed in which state. No database or network. |
 | `test/` | Tests. |
 | `docs/decisions/` | One short note per significant decision, with the reasons and the alternatives. |
 

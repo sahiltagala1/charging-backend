@@ -8,11 +8,11 @@ This is a personal project by Mohammed Sahil Tagala. It is written from scratch 
 
 ## Status
 
-| Stage | What it adds | State |
-| --- | --- | --- |
-| 1. Core | Project skeleton, session rules, charger simulator, REST API, database | In progress |
-| 2. Complete | Pricing, late and duplicate messages, live dashboard, public deployment | Planned |
-| 3. Roaming | Two networks exchanging sessions over an OCPI-style API | Stretch |
+| Stage       | What it adds                                                            | State       |
+| ----------- | ----------------------------------------------------------------------- | ----------- |
+| 1. Core     | Project skeleton, session rules, charger simulator, REST API, database  | In progress |
+| 2. Complete | Pricing, late and duplicate messages, live dashboard, public deployment | Planned     |
+| 3. Roaming  | Two networks exchanging sessions over an OCPI-style API                 | Stretch     |
 
 What exists today: the project skeleton (health check, configuration checking, tests, CI) and the rules of a charging session.
 
@@ -31,7 +31,8 @@ Then open http://127.0.0.1:3000/health.
 ## Check it
 
 ```bash
-npm run check    # lint, type check and tests
+npm run check    # formatting, lint, type check and tests
+npm run format   # tidy every file with Prettier
 npm run build    # compile to dist/
 ```
 
@@ -39,14 +40,22 @@ The same checks run on GitHub for every push and pull request.
 
 ## Layout
 
-| Path | What it holds |
-| --- | --- |
-| `src/app.ts` | Builds the HTTP app. Tests use this directly. |
-| `src/server.ts` | Starts the app and handles shutdown. |
-| `src/config.ts` | Reads and checks environment variables. |
+| Path                    | What it holds                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------- |
+| `src/app.ts`            | Builds the HTTP app. Tests use this directly.                                                     |
+| `src/server.ts`         | Starts the app and handles shutdown.                                                              |
+| `src/config.ts`         | Reads and checks environment variables.                                                           |
 | `src/domain/session.ts` | The rules of a charging session: which events are allowed in which state. No database or network. |
-| `test/` | Tests. |
-| `docs/decisions/` | One short note per significant decision, with the reasons and the alternatives. |
+| `test/`                 | Tests.                                                                                            |
+| `docs/decisions/`       | One short note per significant decision, with the reasons and the alternatives.                   |
+
+## Code style
+
+- Prettier formats every file, and CI fails if a file is not formatted. In VS Code, install the recommended extensions and files are tidied on save.
+- ESLint catches likely mistakes.
+- TypeScript runs in strict mode.
+- Business rules live in `src/domain/` as plain functions, with no database or network code.
+- Comments explain why something is done. The code and the test names say what it does.
 
 ## How decisions are recorded
 

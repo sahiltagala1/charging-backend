@@ -1,15 +1,27 @@
 import { describe, expect, it } from "vitest";
 import {
-  SESSION_STATES, applyEvent, energyDeliveredWh, isFinished, newSession,
-  type Session, type SessionEvent,
+  SESSION_STATES,
+  applyEvent,
+  energyDeliveredWh,
+  isFinished,
+  newSession,
+  type Session,
+  type SessionEvent,
 } from "../src/domain/session.js";
 
 const t = (minutes: number) => new Date(Date.UTC(2026, 0, 1, 12, minutes));
-const fresh = () => newSession({ id: "s1", chargerId: "c1", driverTag: "TAG-1", requestedAt: t(0) });
+const fresh = () =>
+  newSession({ id: "s1", chargerId: "c1", driverTag: "TAG-1", requestedAt: t(0) });
 
 const authorized: SessionEvent = { type: "authorized", eventId: "e1", at: t(1) };
 const started: SessionEvent = { type: "started", eventId: "e2", at: t(2), meterWh: 1000 };
-const stopped: SessionEvent = { type: "stopped", eventId: "e3", at: t(62), meterWh: 8200, reason: "driver" };
+const stopped: SessionEvent = {
+  type: "stopped",
+  eventId: "e3",
+  at: t(62),
+  meterWh: 8200,
+  reason: "driver",
+};
 
 /** Applies events in order and fails the test if any is refused. */
 function run(session: Session, ...events: SessionEvent[]): Session {
@@ -51,7 +63,10 @@ describe("events out of turn", () => {
   });
 
   it("cannot stop a session that never started", () => {
-    expect(applyEvent(run(fresh(), authorized), stopped)).toMatchObject({ ok: false, code: "INVALID_TRANSITION" });
+    expect(applyEvent(run(fresh(), authorized), stopped)).toMatchObject({
+      ok: false,
+      code: "INVALID_TRANSITION",
+    });
   });
 
   it("accepts nothing once finished", () => {
@@ -64,7 +79,9 @@ describe("events out of turn", () => {
     // A guard against someone adding a state and forgetting its rules.
     const reachable = new Set<string>(["requested"]);
     const samples: SessionEvent[] = [
-      authorized, started, stopped,
+      authorized,
+      started,
+      stopped,
       { type: "rejected", eventId: "r", at: t(1), reason: "unknown tag" },
       { type: "faulted", eventId: "f", at: t(3), code: "GroundFailure" },
     ];
@@ -91,7 +108,12 @@ describe("rejection and faults", () => {
   });
 
   it("a fault while charging ends the session and records the code", () => {
-    const s = run(fresh(), authorized, started, { type: "faulted", eventId: "e3", at: t(10), code: "GroundFailure" });
+    const s = run(fresh(), authorized, started, {
+      type: "faulted",
+      eventId: "e3",
+      at: t(10),
+      code: "GroundFailure",
+    });
     expect(s).toMatchObject({ state: "faulted", endReason: "fault:GroundFailure" });
     expect(energyDeliveredWh(s)).toBeUndefined();
   });

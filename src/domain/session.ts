@@ -7,7 +7,14 @@
  * so every rule can be tested with plain values.
  */
 
-export const SESSION_STATES = ["requested", "authorized", "charging", "completed", "rejected", "faulted"] as const;
+export const SESSION_STATES = [
+  "requested",
+  "authorized",
+  "charging",
+  "completed",
+  "rejected",
+  "faulted",
+] as const;
 export type SessionState = (typeof SESSION_STATES)[number];
 
 export type StopReason = "driver" | "charger" | "remote";
@@ -35,7 +42,8 @@ export type Session = {
   appliedEventIds: readonly string[];
 };
 
-export type RejectionCode = "INVALID_TRANSITION" | "INVALID_METER" | "METER_WENT_BACKWARDS" | "TIME_WENT_BACKWARDS";
+export type RejectionCode =
+  "INVALID_TRANSITION" | "INVALID_METER" | "METER_WENT_BACKWARDS" | "TIME_WENT_BACKWARDS";
 
 export type ApplyResult =
   | { ok: true; session: Session; duplicate: boolean }
@@ -51,7 +59,12 @@ const TRANSITIONS: Record<SessionState, Partial<Record<SessionEvent["type"], Ses
   faulted: {},
 };
 
-export function newSession(input: { id: string; chargerId: string; driverTag: string; requestedAt: Date }): Session {
+export function newSession(input: {
+  id: string;
+  chargerId: string;
+  driverTag: string;
+  requestedAt: Date;
+}): Session {
   return { ...input, state: "requested", appliedEventIds: [] };
 }
 
@@ -68,15 +81,25 @@ export function applyEvent(session: Session, event: SessionEvent): ApplyResult {
 
   const next = TRANSITIONS[session.state][event.type];
   if (!next) {
-    return reject("INVALID_TRANSITION", `A ${session.state} session cannot accept "${event.type}".`);
+    return reject(
+      "INVALID_TRANSITION",
+      `A ${session.state} session cannot accept "${event.type}".`,
+    );
   }
 
   const lastChange = session.endedAt ?? session.startedAt ?? session.requestedAt;
   if (event.at.getTime() < lastChange.getTime()) {
-    return reject("TIME_WENT_BACKWARDS", `"${event.type}" is dated before the session's last change.`);
+    return reject(
+      "TIME_WENT_BACKWARDS",
+      `"${event.type}" is dated before the session's last change.`,
+    );
   }
 
-  const base: Session = { ...session, state: next, appliedEventIds: [...session.appliedEventIds, event.eventId] };
+  const base: Session = {
+    ...session,
+    state: next,
+    appliedEventIds: [...session.appliedEventIds, event.eventId],
+  };
 
   switch (event.type) {
     case "authorized":
@@ -84,14 +107,21 @@ export function applyEvent(session: Session, event: SessionEvent): ApplyResult {
     case "rejected":
       return accept({ ...base, endedAt: event.at, endReason: event.reason });
     case "started":
-      if (!isValidMeter(event.meterWh)) return reject("INVALID_METER", "Meter reading must be a whole number of Wh, zero or more.");
+      if (!isValidMeter(event.meterWh))
+        return reject("INVALID_METER", "Meter reading must be a whole number of Wh, zero or more.");
       return accept({ ...base, startedAt: event.at, meterStartWh: event.meterWh });
     case "stopped":
-      if (!isValidMeter(event.meterWh)) return reject("INVALID_METER", "Meter reading must be a whole number of Wh, zero or more.");
+      if (!isValidMeter(event.meterWh))
+        return reject("INVALID_METER", "Meter reading must be a whole number of Wh, zero or more.");
       if (event.meterWh < (session.meterStartWh ?? 0)) {
         return reject("METER_WENT_BACKWARDS", "The stop reading is lower than the start reading.");
       }
-      return accept({ ...base, endedAt: event.at, meterStopWh: event.meterWh, endReason: event.reason });
+      return accept({
+        ...base,
+        endedAt: event.at,
+        meterStopWh: event.meterWh,
+        endReason: event.reason,
+      });
     case "faulted":
       return accept({ ...base, endedAt: event.at, endReason: `fault:${event.code}` });
   }
@@ -99,7 +129,11 @@ export function applyEvent(session: Session, event: SessionEvent): ApplyResult {
 
 /** Energy delivered, in watt-hours. Only known once a session has completed. */
 export function energyDeliveredWh(session: Session): number | undefined {
-  if (session.state !== "completed" || session.meterStartWh === undefined || session.meterStopWh === undefined) {
+  if (
+    session.state !== "completed" ||
+    session.meterStartWh === undefined ||
+    session.meterStopWh === undefined
+  ) {
     return undefined;
   }
   return session.meterStopWh - session.meterStartWh;

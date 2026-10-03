@@ -8,6 +8,22 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: charging
+          POSTGRES_PASSWORD: charging
+          POSTGRES_DB: charging_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U charging"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 15
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,4 +35,5 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      - run: npm run test:integration
       - run: npm run build

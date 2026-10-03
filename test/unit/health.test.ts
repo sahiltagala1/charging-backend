@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, it } from "vitest";
-import { buildApp } from "../src/app.js";
-import { loadConfig } from "../src/config.js";
+import { buildApp } from "../../src/app.js";
+import { loadConfig } from "../../src/config.js";
 
 const app = buildApp({ LOG_LEVEL: "silent" });
 afterAll(() => app.close());
@@ -19,11 +19,22 @@ describe("GET /health", () => {
 });
 
 describe("configuration", () => {
+  const DATABASE_URL = "postgres://user:pass@localhost:5432/db";
+
   it("uses safe defaults", () => {
-    expect(loadConfig({})).toEqual({ PORT: 3000, HOST: "127.0.0.1", LOG_LEVEL: "info" });
+    expect(loadConfig({ DATABASE_URL })).toEqual({
+      PORT: 3000,
+      HOST: "127.0.0.1",
+      LOG_LEVEL: "info",
+      DATABASE_URL,
+    });
   });
 
   it("rejects a bad port with a readable message", () => {
-    expect(() => loadConfig({ PORT: "abc" })).toThrow(/Invalid configuration.*PORT/);
+    expect(() => loadConfig({ DATABASE_URL, PORT: "abc" })).toThrow(/Invalid configuration.*PORT/);
+  });
+
+  it("refuses to start without a database address", () => {
+    expect(() => loadConfig({})).toThrow(/Invalid configuration.*DATABASE_URL/);
   });
 });

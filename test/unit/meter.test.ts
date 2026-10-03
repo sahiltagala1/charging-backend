@@ -7,8 +7,13 @@ import {
   type MeterReading,
   type ReadingBounds,
   type ReadingLog,
-} from "../src/domain/meter.js";
-import { applyEvent, newSession, type Session, type SessionEvent } from "../src/domain/session.js";
+} from "../../src/domain/meter.js";
+import {
+  applyEvent,
+  newSession,
+  type Session,
+  type SessionEvent,
+} from "../../src/domain/session.js";
 
 const t = (minutes: number) => new Date(Date.UTC(2026, 0, 1, 12, minutes));
 

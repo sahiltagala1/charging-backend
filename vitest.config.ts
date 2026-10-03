@@ -1,3 +1,4 @@
 import { defineConfig } from "vitest/config";
 
-export default defineConfig({ test: { include: ["test/**/*.test.ts"] } });
+// Unit tests: fast, no database.
+export default defineConfig({ test: { include: ["test/unit/**/*.test.ts"] } });

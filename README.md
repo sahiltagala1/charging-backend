@@ -14,26 +14,29 @@ This is a personal project by Mohammed Sahil Tagala. It is written from scratch 
 | 2. Complete | Pricing, late and duplicate messages, live dashboard, public deployment | Planned     |
 | 3. Roaming  | Two networks exchanging sessions over an OCPI-style API                 | Stretch     |
 
-What exists today: the project skeleton (health check, configuration checking, tests, CI) the rules of a charging session, and meter readings that may arrive late, twice or out of order.
+What exists today: the project skeleton (health check, configuration checking, tests, CI) the rules of a charging session, meter readings that may arrive late, twice or out of order, and a PostgreSQL database that stores them safely when requests arrive at the same moment.
 
 ## Run it
 
-Needs Node.js 22 or newer.
+Needs Node.js 22.9 or newer and Docker.
 
 ```bash
 npm install
 cp .env.example .env
+npm run db:up        # start PostgreSQL in Docker
+npm run db:migrate   # create the tables
 npm run dev
 ```
 
-Then open http://127.0.0.1:3000/health.
+Then open http://127.0.0.1:3000/health. Stop the database with `npm run db:down`.
 
 ## Check it
 
 ```bash
-npm run check    # formatting, lint, type check and tests
-npm run format   # tidy every file with Prettier
-npm run build    # compile to dist/
+npm run check              # formatting, lint, type check and unit tests
+npm run test:integration   # tests against the real database (needs `npm run db:up`)
+npm run build              # compile to dist/
+npm run format             # tidy every file with Prettier
 ```
 
 The same checks run on GitHub for every push and pull request.

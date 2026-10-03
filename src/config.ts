@@ -9,6 +9,7 @@ const schema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
   HOST: z.string().default("127.0.0.1"),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
+  DATABASE_URL: z.string().regex(/^postgres(ql)?:\/\//, "must be a postgres:// address"),
 });
 
 export type Config = z.infer<typeof schema>;

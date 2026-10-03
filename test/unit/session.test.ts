@@ -7,7 +7,7 @@ import {
   newSession,
   type Session,
   type SessionEvent,
-} from "../src/domain/session.js";
+} from "../../src/domain/session.js";
 
 const t = (minutes: number) => new Date(Date.UTC(2026, 0, 1, 12, minutes));
 const fresh = () =>

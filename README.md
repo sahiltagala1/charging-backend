@@ -30,9 +30,18 @@ npm run dev
 
 Then open http://127.0.0.1:3000/health. Stop the database with `npm run db:down`.
 
-The database listens on port **5433** on your machine, not the usual 5432, so it cannot be confused with a PostgreSQL you may already have installed.
+The database listens on port **54329** on your machine, not the usual 5432, so it does not clash with a PostgreSQL you may already have.
 
-If you see `role "charging" does not exist`, your `.env` is pointing at a different PostgreSQL. Copy `.env.example` to `.env` again and check that Docker is running.
+### If the database will not start or connect
+
+| Message                                                              | Meaning                                                      | Fix                                                                                                           |
+| -------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `port is already allocated` or `address already in use`              | Something else on your machine uses that port.               | Pick another number, set it as `DB_PORT` and inside `DATABASE_URL` in `.env`, then run `npm run db:up` again. |
+| `role "charging" does not exist` or `password authentication failed` | You reached a different PostgreSQL, not the one from Docker. | Check that `npm run db:up` finished without errors and that the port in `DATABASE_URL` matches `DB_PORT`.     |
+| `ECONNREFUSED`                                                       | Nothing is listening on that port.                           | Start Docker Desktop, then `npm run db:up`.                                                                   |
+
+The integration tests use the same port. If you changed it, run them with
+`TEST_DATABASE_URL=postgres://charging:charging@127.0.0.1:<port>/charging_test npm run test:integration`.
 
 ## Check it
 

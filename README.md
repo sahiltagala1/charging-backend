@@ -30,6 +30,10 @@ npm run dev
 
 Then open http://127.0.0.1:3000/health. Stop the database with `npm run db:down`.
 
+The database listens on port **5433** on your machine, not the usual 5432, so it cannot be confused with a PostgreSQL you may already have installed.
+
+If you see `role "charging" does not exist`, your `.env` is pointing at a different PostgreSQL. Copy `.env.example` to `.env` again and check that Docker is running.
+
 ## Check it
 
 ```bash

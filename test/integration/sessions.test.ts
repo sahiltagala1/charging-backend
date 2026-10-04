@@ -28,7 +28,7 @@ beforeEach(async () => {
   await clearTestDatabase(pool);
   await insertCharger(pool, { id: "c1", name: "Car park, bay 1" });
 });
-afterAll(() => pool.end());
+afterAll(() => pool?.end());
 
 /** Starts a session and applies the given events, failing the test if anything is refused. */
 async function sessionAfter(...events: SessionEvent[]): Promise<string> {
